@@ -10,6 +10,7 @@ const TabContent = ({
     todoList,
     editInput,
     onHandleChange,
+    onHandleKeyDown,
     onHandleEditClick,
     onHandleDeleteClick,
     onHandleCompletedClick,
@@ -22,19 +23,24 @@ const TabContent = ({
                         todoList.map((elem, i) => (
                             <tr key={`${elem.item}-${i}`}>
                                 <td>
-                                    <div className="content-wrapper">
+                                    <div
+                                        className="content-wrapper"
+                                        id={elem.alreadyExist ? "focus" : ""}
+                                    >
                                         <textarea
                                             id={elem.id}
                                             className={elem.status}
                                             value={
-                                                elem.status === "edit"
-                                                    ? editItem !== "" 
+                                                elem.status === "edit" ||
+                                                elem.alreadyExist
+                                                    ? editItem !== ""
                                                         ? editItem
                                                         : elem.item
                                                     : elem.item
                                             }
                                             readOnly={
-                                                elem.status === "edit"
+                                                elem.status === "edit" ||
+                                                elem.alreadyExist
                                                     ? false
                                                     : true
                                             }
@@ -46,7 +52,7 @@ const TabContent = ({
                                                     : "5"
                                             }
                                             cols="50"
-                                            maxLength="200"
+                                            maxLength="500"
                                             onFocus={function (e) {
                                                 var val = e.target.value;
                                                 e.target.value = "";
@@ -55,13 +61,14 @@ const TabContent = ({
                                             ref={(el) =>
                                                 (editInput.current[i] = el)
                                             }
+                                            onKeyDown={onHandleKeyDown}
                                         />
                                         <div className="button-group">
                                             <button
                                                 name={
                                                     elem.status !== "complete"
                                                         ? "complete"
-                                                        : "active"
+                                                        : "todo"
                                                 }
                                                 onClick={(event) =>
                                                     onHandleCompletedClick(
@@ -70,6 +77,11 @@ const TabContent = ({
                                                     )
                                                 }
                                                 id={elem.id}
+                                                disabled={
+                                                    elem.status === "edit"
+                                                        ? true
+                                                        : false
+                                                }
                                             >
                                                 {elem.status !== "complete" ? (
                                                     <Complete
@@ -95,34 +107,42 @@ const TabContent = ({
                                                     title="Delete"
                                                 />
                                             </button>
-                                            <button
-                                                onClick={(event) =>
-                                                    onHandleEditClick(event)
-                                                }
-                                                name={
-                                                    elem.status !== "edit"
-                                                        ? "edit"
-                                                        : "save"
-                                                }
-                                                value={
-                                                    elem.status === "edit"
-                                                        ? editItem
-                                                        : elem.item
-                                                }
-                                                id={elem.id}
-                                            >
-                                                {elem.status !== "edit" ? (
-                                                    <Edit
-                                                        className="edit-task"
-                                                        title="Edit"
-                                                    />
-                                                ) : (
+                                            {elem.status === "edit" ? (
+                                                <button
+                                                    onClick={(event) =>
+                                                        onHandleEditClick(event)
+                                                    }
+                                                    name="save"
+                                                    value={elem.item}
+                                                    id={elem.id}
+                                                >
                                                     <Save
                                                         className="save-task"
                                                         title="Save"
                                                     />
-                                                )}
-                                            </button>
+                                                </button>
+                                            ) : elem.status !== "complete" ? (
+                                                <button
+                                                    onClick={(event) =>
+                                                        onHandleEditClick(event)
+                                                    }
+                                                    name="edit"
+                                                    value={elem.item}
+                                                    id={elem.id}
+                                                    disabled={
+                                                        elem.disabled
+                                                            ? true
+                                                            : false
+                                                    }
+                                                >
+                                                    <Edit
+                                                        className="edit-task"
+                                                        title="Edit"
+                                                    />
+                                                </button>
+                                            ) : (
+                                                ""
+                                            )}
                                         </div>
                                     </div>
                                 </td>

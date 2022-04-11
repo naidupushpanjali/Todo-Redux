@@ -7,24 +7,40 @@ import {
     DELETE_TASK,
     COMPLETE_TASK,
     EDIT_TASK,
+    ESCAPE_EVENT,
 } from "../../features/todo/todoSlice";
 
 const Tabs = () => {
     const editInput = useRef([]);
+    const addInput = useRef([]);
     const dispatch = useDispatch();
     const [task, setTask] = useState("");
     const [editItem, setEditItem] = useState("");
-    const todoList = useSelector((state) => state.todo);
     const [taskComplete, setTaskComplete] = useState(false);
+
+    const todoList = useSelector((state) => state.todo);
 
     const handleAdd = (e) => {
         e.preventDefault();
-        if (task) {
+        const taskExist = todoList.findIndex((x) => x.item === task);
+        if (task && taskExist < 0) {
             dispatch(
                 ADD_TASK({
-                    item: task,
+                    item: task.trim(),
                 })
             );
+            addInput.current.focus();
+        } else {
+            dispatch(
+                EDIT_TASK({
+                    id: taskExist,
+                    item: task.trim(),
+                    status: "edit",
+                    disabled: true,
+                    alreadyExist: true,
+                })
+            );
+            editInput.current[taskExist].focus();
         }
         setTask("");
     };
@@ -35,6 +51,7 @@ const Tabs = () => {
                 id: event.target.id,
                 item: elem,
                 status: event.target.name,
+                disabled: false,
             })
         );
     };
@@ -44,6 +61,7 @@ const Tabs = () => {
             DELETE_TASK({
                 item: elem,
                 status: event.target.name,
+                disabled: false,
             })
         );
     };
@@ -54,8 +72,32 @@ const Tabs = () => {
                 id: event.target.id,
                 item: editItem === "" ? event.target.value : editItem,
                 status: event.target.name,
+                disabled: true,
             })
         );
+        const taskExist = todoList.findIndex(
+            (x) => x.item === event.target.value
+        );
+        editInput.current[taskExist].focus();
+
+        if (event.target.name === "save") {
+            setEditItem("");
+            addInput.current.focus();
+        }
+    };
+
+    const handleKeyDown = (e) => {
+        if (e.keyCode === 27) {
+            dispatch(
+                ESCAPE_EVENT({
+                    id: e.target.id,
+                    item: e.target.value,
+                    status: "active",
+                    alreadyExist: false,
+                })
+            );
+            addInput.current.focus();
+        }
     };
 
     return (
@@ -69,6 +111,7 @@ const Tabs = () => {
                                 autoFocus
                                 type="text"
                                 value={task}
+                                ref={addInput}
                                 name="addField"
                                 className="add-items"
                                 onChange={(event) =>
@@ -90,6 +133,7 @@ const Tabs = () => {
                             onHandleChange={(event) =>
                                 setEditItem(event.target.value)
                             }
+                            onHandleKeyDown={handleKeyDown}
                             onHandleEditClick={handleEditClick}
                             onHandleDeleteClick={handleDeleteClick}
                             onHandleCompletedClick={handleCompletedClick}

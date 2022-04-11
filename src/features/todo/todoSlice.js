@@ -9,8 +9,14 @@ export const todoSlice = createSlice({
                 id: state.length,
                 item: action.payload.item,
                 status: "active",
+                disabled: false,
+                alreadyExist: false,
             };
-            state.push(toDo);
+            const taskExist = state.findIndex(
+                (x) => x.item === action.payload.item
+            );
+            if (taskExist < 0 && action.payload.item.trim() !== "")
+                state.push(toDo);
         },
         COMPLETE_TASK: (state, action) => {
             const completedTask = state.findIndex(
@@ -27,11 +33,35 @@ export const todoSlice = createSlice({
             );
             state[editTask].item = action.payload.item;
             state[editTask].status = action.payload.status;
+            state
+                .filter(
+                    (x) =>
+                        x.disabled ===
+                        (action.payload.status === "edit" ? false : true)
+                )
+                .map(
+                    (x) =>
+                        (x.disabled =
+                            action.payload.status === "edit" ? true : false)
+                );
+            state[editTask].disabled = !action.payload.disabled;
+            if (action.payload.status === "edit") {
+                state[editTask].alreadyExist = true;
+            } else {
+                state[editTask].alreadyExist = false;
+            }
+        },
+        ESCAPE_EVENT: (state, action) => {
+            const editTask = state.findIndex(
+                (x) => x.id === Number(action.payload.id)
+            );
+            state[editTask].alreadyExist = action.payload.alreadyExist;
+            state[editTask].status = action.payload.status;
         },
     },
 });
 
-export const { ADD_TASK, COMPLETE_TASK, DELETE_TASK, EDIT_TASK } =
+export const { ADD_TASK, COMPLETE_TASK, DELETE_TASK, EDIT_TASK, ESCAPE_EVENT } =
     todoSlice.actions;
 
 export default todoSlice.reducer;
