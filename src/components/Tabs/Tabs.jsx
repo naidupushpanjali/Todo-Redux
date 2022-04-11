@@ -126,18 +126,20 @@ const Tabs = () => {
                                 Add Task
                             </button>
                         </form>
-                        <TabContent
-                            editItem={editItem}
-                            todoList={todoList}
-                            editInput={editInput}
-                            onHandleChange={(event) =>
-                                setEditItem(event.target.value)
-                            }
-                            onHandleKeyDown={handleKeyDown}
-                            onHandleEditClick={handleEditClick}
-                            onHandleDeleteClick={handleDeleteClick}
-                            onHandleCompletedClick={handleCompletedClick}
-                        />
+                        {todoList.length > 0 && (
+                            <TabContent
+                                editItem={editItem}
+                                todoList={todoList}
+                                editInput={editInput}
+                                onHandleChange={(event) =>
+                                    setEditItem(event.target.value)
+                                }
+                                onHandleKeyDown={handleKeyDown}
+                                onHandleEditClick={handleEditClick}
+                                onHandleDeleteClick={handleDeleteClick}
+                                onHandleCompletedClick={handleCompletedClick}
+                            />
+                        )}
                         {todoList.find((x) => x.status === "complete") && (
                             <button
                                 className="secondary-btn page-btn"
