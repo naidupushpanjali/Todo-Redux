@@ -25,7 +25,10 @@ export const todoSlice = createSlice({
             state[completedTask].status = action.payload.status;
         },
         DELETE_TASK: (state, action) => {
-            return state.filter((x) => x.item !== action.payload.item);
+            return state.filter((x) => x.id !== action.payload.id);
+        },
+        DELETE_ALL_TASK: (state, action) => {
+            state.push(action.payload.item);
         },
         EDIT_TASK: (state, action) => {
             const editTask = state.findIndex(
@@ -61,7 +64,13 @@ export const todoSlice = createSlice({
     },
 });
 
-export const { ADD_TASK, COMPLETE_TASK, DELETE_TASK, EDIT_TASK, ESCAPE_EVENT } =
-    todoSlice.actions;
+export const {
+    ADD_TASK,
+    COMPLETE_TASK,
+    DELETE_TASK,
+    EDIT_TASK,
+    ESCAPE_EVENT,
+    DELETE_ALL_TASK,
+} = todoSlice.actions;
 
 export default todoSlice.reducer;

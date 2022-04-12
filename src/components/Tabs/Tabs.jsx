@@ -8,6 +8,7 @@ import {
     COMPLETE_TASK,
     EDIT_TASK,
     ESCAPE_EVENT,
+    DELETE_ALL_TASK,
 } from "../../features/todo/todoSlice";
 
 const Tabs = () => {
@@ -59,7 +60,7 @@ const Tabs = () => {
     const handleDeleteClick = (elem, event) => {
         dispatch(
             DELETE_TASK({
-                item: elem,
+                id: event.target.id,
                 status: event.target.name,
                 disabled: false,
             })
@@ -100,6 +101,14 @@ const Tabs = () => {
         }
     };
 
+    const handleDeleteAll = () => {
+        dispatch(
+            DELETE_ALL_TASK({
+                item: [],
+            })
+        );
+    };
+
     return (
         <div className="todo-app">
             {!taskComplete ? (
@@ -118,6 +127,7 @@ const Tabs = () => {
                                     setTask(event.target.value)
                                 }
                                 placeholder="Add Task name"
+                                autoComplete="off"
                             />
                             <button
                                 type="submit"
@@ -127,18 +137,30 @@ const Tabs = () => {
                             </button>
                         </form>
                         {todoList.length > 0 && (
-                            <TabContent
-                                editItem={editItem}
-                                todoList={todoList}
-                                editInput={editInput}
-                                onHandleChange={(event) =>
-                                    setEditItem(event.target.value)
-                                }
-                                onHandleKeyDown={handleKeyDown}
-                                onHandleEditClick={handleEditClick}
-                                onHandleDeleteClick={handleDeleteClick}
-                                onHandleCompletedClick={handleCompletedClick}
-                            />
+                            <>
+                                {todoList.length > 1 && (
+                                    <button
+                                        className="delete-btn"
+                                        onClick={handleDeleteAll}
+                                    >
+                                        Delete All
+                                    </button>
+                                )}
+                                <TabContent
+                                    editItem={editItem}
+                                    todoList={todoList}
+                                    editInput={editInput}
+                                    onHandleChange={(event) =>
+                                        setEditItem(event.target.value)
+                                    }
+                                    onHandleKeyDown={handleKeyDown}
+                                    onHandleEditClick={handleEditClick}
+                                    onHandleDeleteClick={handleDeleteClick}
+                                    onHandleCompletedClick={
+                                        handleCompletedClick
+                                    }
+                                />
+                            </>
                         )}
                         {todoList.find((x) => x.status === "complete") && (
                             <button
