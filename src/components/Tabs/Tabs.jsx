@@ -97,11 +97,7 @@ const Tabs = () => {
     };
 
     const handleDeleteAll = () => {
-        dispatch(
-            action.DELETE_ALL_TASK({
-                item: [],
-            })
-        );
+        dispatch(action.DELETE_ALL_TASK());
     };
 
     return (

@@ -25,8 +25,8 @@ export const todoSlice = createSlice({
         DELETE_TASK: (state, action) => {
             return state.filter((x) => x.id !== Number(action.payload.id));
         },
-        DELETE_ALL_TASK: (state, action) => {
-            state.push(action.payload.item);
+        DELETE_ALL_TASK: () => {
+            if (window.confirm("Are you sure you want to proceed?")) return [];
         },
         EDIT_TASK: (state, action) => {
             const { id, item, status, disabled } = action.payload;
