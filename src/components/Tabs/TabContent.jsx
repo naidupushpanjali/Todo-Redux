@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { TASK_STATUS } from "../TaskStatus";
 import { ReactComponent as Edit } from "../../assets/edit.svg";
 import { ReactComponent as Save } from "../../assets/save.svg";
 import { ReactComponent as Complete } from "../../assets/done.svg";
@@ -31,7 +32,8 @@ const TabContent = ({
                                             id={elem.id}
                                             className={elem.status}
                                             value={
-                                                elem.status === "edit" ||
+                                                elem.status ===
+                                                    TASK_STATUS.EDIT ||
                                                 elem.alreadyExist
                                                     ? editItem !== ""
                                                         ? editItem
@@ -39,7 +41,8 @@ const TabContent = ({
                                                     : elem.item
                                             }
                                             readOnly={
-                                                elem.status === "edit" ||
+                                                elem.status ===
+                                                    TASK_STATUS.EDIT ||
                                                 elem.alreadyExist
                                                     ? false
                                                     : true
@@ -66,9 +69,10 @@ const TabContent = ({
                                         <div className="button-group">
                                             <button
                                                 name={
-                                                    elem.status !== "complete"
-                                                        ? "complete"
-                                                        : "todo"
+                                                    elem.status !==
+                                                    TASK_STATUS.COMPLETE
+                                                        ? TASK_STATUS.COMPLETE
+                                                        : TASK_STATUS.TODO
                                                 }
                                                 onClick={(event) =>
                                                     onHandleCompletedClick(
@@ -78,15 +82,19 @@ const TabContent = ({
                                                 }
                                                 id={elem.id}
                                                 disabled={
-                                                    elem.status === "edit"
+                                                    elem.status ===
+                                                    TASK_STATUS.EDIT
                                                         ? true
                                                         : false
                                                 }
                                             >
-                                                {elem.status !== "complete" ? (
+                                                {elem.status !==
+                                                TASK_STATUS.COMPLETE ? (
                                                     <Complete
                                                         className="complete-task"
-                                                        title="Complete"
+                                                        title={
+                                                            TASK_STATUS.COMPLETE
+                                                        }
                                                     />
                                                 ) : (
                                                     "TODO"
@@ -94,12 +102,9 @@ const TabContent = ({
                                             </button>
                                             <button
                                                 onClick={(event) =>
-                                                    onHandleDeleteClick(
-                                                        elem.item,
-                                                        event
-                                                    )
+                                                    onHandleDeleteClick(event)
                                                 }
-                                                name="delete"
+                                                name={TASK_STATUS.DELETE}
                                                 id={elem.id}
                                             >
                                                 <Delete
@@ -107,12 +112,13 @@ const TabContent = ({
                                                     title="Delete"
                                                 />
                                             </button>
-                                            {elem.status === "edit" ? (
+                                            {elem.status ===
+                                            TASK_STATUS.EDIT ? (
                                                 <button
                                                     onClick={(event) =>
                                                         onHandleEditClick(event)
                                                     }
-                                                    name="save"
+                                                    name={TASK_STATUS.SAVE}
                                                     value={elem.item}
                                                     id={elem.id}
                                                 >
@@ -121,12 +127,13 @@ const TabContent = ({
                                                         title="Save"
                                                     />
                                                 </button>
-                                            ) : elem.status !== "complete" ? (
+                                            ) : elem.status !==
+                                              TASK_STATUS.COMPLETE ? (
                                                 <button
                                                     onClick={(event) =>
                                                         onHandleEditClick(event)
                                                     }
-                                                    name="edit"
+                                                    name={TASK_STATUS.EDIT}
                                                     value={elem.item}
                                                     id={elem.id}
                                                     disabled={

@@ -1,15 +1,9 @@
 import React, { useState, useRef } from "react";
 import TabContent from "./TabContent";
+import { TASK_STATUS } from "../TaskStatus";
 import CompletedTask from "./CompletedTask";
 import { useDispatch, useSelector } from "react-redux";
-import {
-    ADD_TASK,
-    DELETE_TASK,
-    COMPLETE_TASK,
-    EDIT_TASK,
-    ESCAPE_EVENT,
-    DELETE_ALL_TASK,
-} from "../../features/todo/todoSlice";
+import { action } from "../../features/todo/todoSlice";
 
 const Tabs = () => {
     const editInput = useRef([]);
@@ -26,17 +20,17 @@ const Tabs = () => {
         const taskExist = todoList.findIndex((x) => x.item === task);
         if (task && taskExist < 0) {
             dispatch(
-                ADD_TASK({
+                action.ADD_TASK({
                     item: task.trim(),
                 })
             );
             addInput.current.focus();
         } else {
             dispatch(
-                EDIT_TASK({
+                action.EDIT_TASK({
                     id: taskExist,
                     item: task.trim(),
-                    status: "edit",
+                    status: TASK_STATUS.EDIT,
                     disabled: true,
                     alreadyExist: true,
                 })
@@ -48,7 +42,7 @@ const Tabs = () => {
 
     const handleCompletedClick = (elem, event) => {
         dispatch(
-            COMPLETE_TASK({
+            action.COMPLETE_TASK({
                 id: event.target.id,
                 item: elem,
                 status: event.target.name,
@@ -57,9 +51,9 @@ const Tabs = () => {
         );
     };
 
-    const handleDeleteClick = (elem, event) => {
+    const handleDeleteClick = (event) => {
         dispatch(
-            DELETE_TASK({
+            action.DELETE_TASK({
                 id: event.target.id,
                 status: event.target.name,
                 disabled: false,
@@ -69,7 +63,7 @@ const Tabs = () => {
 
     const handleEditClick = (event) => {
         dispatch(
-            EDIT_TASK({
+            action.EDIT_TASK({
                 id: event.target.id,
                 item: editItem === "" ? event.target.value : editItem,
                 status: event.target.name,
@@ -81,7 +75,7 @@ const Tabs = () => {
         );
         editInput.current[taskExist].focus();
 
-        if (event.target.name === "save") {
+        if (event.target.name === TASK_STATUS.SAVE) {
             setEditItem("");
             addInput.current.focus();
         }
@@ -90,11 +84,12 @@ const Tabs = () => {
     const handleKeyDown = (e) => {
         if (e.keyCode === 27) {
             dispatch(
-                ESCAPE_EVENT({
+                action.ESCAPE_EVENT({
                     id: e.target.id,
                     item: e.target.value,
-                    status: "active",
+                    status: TASK_STATUS.ACTIVE,
                     alreadyExist: false,
+                    disabled: false,
                 })
             );
             addInput.current.focus();
@@ -103,7 +98,7 @@ const Tabs = () => {
 
     const handleDeleteAll = () => {
         dispatch(
-            DELETE_ALL_TASK({
+            action.DELETE_ALL_TASK({
                 item: [],
             })
         );
@@ -162,7 +157,9 @@ const Tabs = () => {
                                 />
                             </>
                         )}
-                        {todoList.find((x) => x.status === "complete") && (
+                        {todoList.find(
+                            (x) => x.status === TASK_STATUS.COMPLETE
+                        ) && (
                             <button
                                 className="secondary-btn page-btn"
                                 onClick={() => setTaskComplete(!taskComplete)}

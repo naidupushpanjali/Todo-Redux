@@ -1,76 +1,66 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { TASK_STATUS } from "../../components/TaskStatus";
 
 export const todoSlice = createSlice({
     name: "todo",
     initialState: [],
     reducers: {
         ADD_TASK: (state, action) => {
+            const { item } = action.payload;
             const toDo = {
                 id: state.length,
-                item: action.payload.item,
-                status: "active",
+                item: item,
+                status: TASK_STATUS.ACTIVE,
                 disabled: false,
                 alreadyExist: false,
             };
-            const taskExist = state.findIndex(
-                (x) => x.item === action.payload.item
-            );
-            if (taskExist < 0 && action.payload.item.trim() !== "")
-                state.push(toDo);
+            const taskExist = state.findIndex((x) => x.item === item);
+            if (taskExist < 0 && item.trim() !== "") state.push(toDo);
         },
         COMPLETE_TASK: (state, action) => {
-            const completedTask = state.findIndex(
-                (x) => x.id === Number(action.payload.id)
-            );
-            state[completedTask].status = action.payload.status;
+            const { id, status } = action.payload;
+            const completedTask = state.findIndex((x) => x.id === Number(id));
+            state[completedTask].status = status;
         },
         DELETE_TASK: (state, action) => {
-            return state.filter((x) => x.id !== action.payload.id);
+            return state.filter((x) => x.id !== Number(action.payload.id));
         },
         DELETE_ALL_TASK: (state, action) => {
             state.push(action.payload.item);
         },
         EDIT_TASK: (state, action) => {
-            const editTask = state.findIndex(
-                (x) => x.id === Number(action.payload.id)
-            );
-            state[editTask].item = action.payload.item;
-            state[editTask].status = action.payload.status;
+            const { id, item, status, disabled } = action.payload;
+            const editTask = state.findIndex((x) => x.id === Number(id));
+            state[editTask].item = item;
+            state[editTask].status = status;
             state
                 .filter(
                     (x) =>
                         x.disabled ===
-                        (action.payload.status === "edit" ? false : true)
+                        (status === TASK_STATUS.EDIT ? false : true)
                 )
                 .map(
                     (x) =>
                         (x.disabled =
-                            action.payload.status === "edit" ? true : false)
+                            status === TASK_STATUS.EDIT ? true : false)
                 );
-            state[editTask].disabled = !action.payload.disabled;
-            if (action.payload.status === "edit") {
+            state[editTask].disabled = !disabled;
+            if (status === TASK_STATUS.EDIT) {
                 state[editTask].alreadyExist = true;
             } else {
                 state[editTask].alreadyExist = false;
             }
         },
         ESCAPE_EVENT: (state, action) => {
-            const editTask = state.findIndex(
-                (x) => x.id === Number(action.payload.id)
-            );
-            state[editTask].alreadyExist = action.payload.alreadyExist;
-            state[editTask].status = action.payload.status;
+            const { id, status, alreadyExist } = action.payload;
+            const editTask = state.findIndex((x) => x.id === Number(id));
+            state[editTask].alreadyExist = alreadyExist;
+            state[editTask].status = status;
+            state.map((x) => (x.disabled = false));
         },
     },
 });
 
-export const {
-    ADD_TASK,
-    COMPLETE_TASK,
-    DELETE_TASK,
-    EDIT_TASK,
-    ESCAPE_EVENT,
-    DELETE_ALL_TASK,
-} = todoSlice.actions;
+export const action = ({ ...todoSlice.actions } = todoSlice.actions);
 
 export default todoSlice.reducer;

@@ -1,4 +1,5 @@
 import React from "react";
+import { TASK_STATUS } from "../TaskStatus";
 
 const CompletedTask = ({ todoList, onHandleBack }) => {
     return (
@@ -7,7 +8,7 @@ const CompletedTask = ({ todoList, onHandleBack }) => {
             <div className="content-playground">
                 {todoList.map(
                     (x, i) =>
-                        x.status === "complete" && (
+                        x.status === TASK_STATUS.COMPLETE && (
                             <div
                                 className="content-wrapper"
                                 key={`${x.item}-${i}`}
