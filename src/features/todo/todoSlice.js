@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, nanoid } from "@reduxjs/toolkit";
 import { TASK_STATUS } from "../../components/TaskStatus";
 
 export const todoSlice = createSlice({
@@ -8,7 +8,7 @@ export const todoSlice = createSlice({
         ADD_TASK: (state, action) => {
             const { item } = action.payload;
             const toDo = {
-                id: state.length,
+                id: nanoid(),
                 item: item,
                 status: TASK_STATUS.ACTIVE,
                 disabled: false,
@@ -19,18 +19,18 @@ export const todoSlice = createSlice({
         },
         COMPLETE_TASK: (state, action) => {
             const { id, status } = action.payload;
-            const completedTask = state.findIndex((x) => x.id === Number(id));
+            const completedTask = state.findIndex((x) => x.id === id);
             state[completedTask].status = status;
         },
         DELETE_TASK: (state, action) => {
-            return state.filter((x) => x.id !== Number(action.payload.id));
+            return state.filter((x) => x.id !== action.payload.id);
         },
         DELETE_ALL_TASK: () => {
             if (window.confirm("Are you sure you want to proceed?")) return [];
         },
         EDIT_TASK: (state, action) => {
             const { id, item, status, disabled } = action.payload;
-            const editTask = state.findIndex((x) => x.id === Number(id));
+            const editTask = state.findIndex((x) => x.id === id);
             state[editTask].item = item;
             state[editTask].status = status;
             state
@@ -53,7 +53,7 @@ export const todoSlice = createSlice({
         },
         ESCAPE_EVENT: (state, action) => {
             const { id, status, alreadyExist } = action.payload;
-            const editTask = state.findIndex((x) => x.id === Number(id));
+            const editTask = state.findIndex((x) => x.id === id);
             state[editTask].alreadyExist = alreadyExist;
             state[editTask].status = status;
             state.map((x) => (x.disabled = false));

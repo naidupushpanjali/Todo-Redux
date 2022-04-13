@@ -28,7 +28,7 @@ const Tabs = () => {
         } else {
             dispatch(
                 action.EDIT_TASK({
-                    id: taskExist,
+                    id: todoList[taskExist].id,
                     item: task.trim(),
                     status: TASK_STATUS.EDIT,
                     disabled: true,
